@@ -80,4 +80,52 @@ class User extends Authenticatable
     {
         return $this->followings()->where('followed_id', $userId)->exists();
     }
+    
+    public function timeline()
+    {
+        $follow_user_ids = $this->followings()->pluck('users.id')->toArray();
+        $follow_user_ids[] = $this->id;
+        return Post::whereIn('user_id', $follow_user_ids);
+    }
+    
+    public function favorites()
+    {
+        return $this->belongsToMany(Post::class, 'favorites', 'user_id', 'post_id')->withTimestamps();
+    }
+    
+    public function favorited()
+    {
+        return $this->belongsToMany(Post::class, 'favorites', 'post_id', 'user_id')->withTimestamps();
+    }
+    
+    public function favorite($postId)
+    {
+        $exist = $this->is_favorite($postId);
+        $its_me = $this->id == $postId;
+    
+        if ($exist || $its_me) {
+            return false;
+        } else {
+            $this->favorites()->attach($postId);
+            return true;
+        }
+    }
+    
+    public function unfavorite($postId)
+    {
+        $exist = $this->is_favorite($postId);
+        $its_me = $this->id == $postId;
+    
+        if ($exist && !$its_me) {
+            $this->favorites()->detach($postId);
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+    public function is_favorite($postId)
+    {
+        return $this->favorites()->where('post_id', $postId)->exists();
+    }
 }

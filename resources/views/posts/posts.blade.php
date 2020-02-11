@@ -10,11 +10,14 @@
                     <p class="mb-0">{!! nl2br(e($post->content)) !!}</p>
                 </div>
                 <div>
-                    @if (Auth::id() == $post->user_id)
-                        {!! Form::open(['route' => ['posts.destroy', $post->id], 'method' => 'delete']) !!}
-                            {!! Form::submit('Delete', ['class' => 'btn btn-danger btn-sm']) !!}
-                        {!! Form::close() !!}
-                    @endif
+                    <div class="row">
+                        @include('favorite.button', ['posts' => $posts])
+                        @if (Auth::id() == $post->user_id)
+                            {!! Form::open(['route' => ['posts.destroy', $post->id], 'method' => 'delete']) !!}
+                                {!! Form::submit('Delete', ['class' => 'btn btn-danger btn-sm']) !!}
+                            {!! Form::close() !!}
+                        @endif
+                    </div>
                 </div>
             </div>
         </li>

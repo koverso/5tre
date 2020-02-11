@@ -11,7 +11,7 @@ class PostsController extends Controller
         $data = [];
         if (\Auth::check()) {
             $user = \Auth::user();
-            $posts = $user->posts()->orderBy('created_at', 'desc')->paginate(10);
+            $posts = $user->timeline()->orderBy('created_at', 'desc')->paginate(10);
             
             $data = [
                 'user' => $user,
